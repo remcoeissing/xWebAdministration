@@ -1798,17 +1798,18 @@ try
                 }
 
                 Mock Get-WebConfiguration
-                Mock New-WebAppPool -MockWith {$mockAppPool}
+                Mock Add-WebConfigurationProperty -ParameterFilter { $Filter -eq 'system.applicationHost/applicationPools' `
+                        -and $Value.Name -eq $mockAppPool.Name } -MockWith {$mockAppPool}
                 Mock Start-Sleep
 
-                It 'Should call New-WebAppPool' {
+                It 'Should call Add-WebConfigurationProperty' {
                     Set-TargetResource -Ensure 'Present' -Name $mockAppPool.Name
-                    Assert-MockCalled New-WebAppPool -Exactly 1
+                    Assert-MockCalled Add-WebConfigurationProperty -Exactly 1
                 }
 
-                It 'Should throw if New-WebAppPool fails' {
+                It 'Should throw if Add-WebConfigurationProperty fails' {
 
-                    Mock New-WebAppPool -MockWith {throw}
+                    Mock Add-WebConfigurationProperty -ParameterFilter {$Filter -eq 'system.applicationHost/applicationPools'} -MockWith {throw}
 
                     {Set-TargetResource -Ensure 'Present' -Name $mockAppPool.Name} |
                     Should Throw

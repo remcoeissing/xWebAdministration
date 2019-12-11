@@ -17,7 +17,7 @@ Import-Module (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\
 $TestEnvironment = Initialize-TestEnvironment `
     -DSCModuleName $script:DSCModuleName `
     -DSCResourceName $script:DSCResourceName `
-    -TestType Integration 
+    -TestType Integration
 
 #endregion
 
@@ -34,7 +34,7 @@ $tempBackupName = "$($script:DSCResourceName)_$(Get-Date -Format 'yyyyMMdd_HHmms
 try
 {
     # Create configuration backup
-    
+
     Backup-WebConfiguration -Name $tempBackupName | Out-Null
 
     #region Integration Tests
@@ -50,6 +50,63 @@ try
             {
                 Invoke-Expression -Command (
                     '{0}_Config -OutputPath $TestDrive -ConfigurationData $ConfigData -ErrorAction Stop' -f
+                    $script:DSCResourceName
+                )
+
+                Start-DscConfiguration -Path $TestDrive -ComputerName localhost -Force -Wait -Verbose
+            } | Should Not Throw
+        }
+
+        It 'Should be able to call Get-DscConfiguration without throwing' {
+            {
+                Get-DscConfiguration -Verbose -ErrorAction Stop
+            } | Should Not Throw
+        }
+
+        #endregion
+
+        It 'Should have set the resource and all the parameters should match' {
+
+            $currentConfiguration = Get-DscConfiguration
+
+            foreach ($parameter in $TestParameters.GetEnumerator())
+            {
+                Write-Verbose -Message "The $($parameter.Name) property should be set."
+
+                if ($parameter.Name -eq 'Credential')
+                {
+                    $appPool = Get-WebConfiguration -Filter '/system.applicationHost/applicationPools/add' |
+                        Where-Object -FilterScript {$_.name -eq $TestParameters['Name']}
+
+                    $appPool.processModel.userName |
+                    Should Be $TestParameters['Credential'].UserName
+
+                    $appPool.processModel.password |
+                    Should Be $TestParameters['Credential'].GetNetworkCredential().Password
+                }
+                else
+                {
+                    $currentConfiguration."$($parameter.Name)" |
+                    Should Be $TestParameters[$parameter.Name]
+                }
+            }
+
+        }
+
+        It 'Actual configuration should match the desired configuration' {
+            Test-DscConfiguration -Verbose | Should Be $true
+        }
+
+    }
+
+    Describe "$($script:DSCResourceName)_withDotName_Integration" {
+
+        #region Default Tests
+
+        It 'Should be able to compile and apply without throwing' {
+            {
+                Invoke-Expression -Command (
+                    '{0}_withDotName_Config -OutputPath $TestDrive -ConfigurationData $ConfigData -ErrorAction Stop' -f
                     $script:DSCResourceName
                 )
 

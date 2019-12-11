@@ -137,3 +137,68 @@ Configuration MSFT_xWebAppPool_Config
         }
     }
 }
+
+$TestParameters.Name = ". $($TestParameters.Name)"
+
+Configuration MSFT_xWebAppPool_withDotName_Config
+{
+    Import-DscResource -ModuleName xWebAdministration
+
+    Node $AllNodes.NodeName
+    {
+        xWebAppPool TestAppPool
+        {
+            Name                           = $TestParameters.Name
+            Ensure                         = $TestParameters.Ensure
+            State                          = $TestParameters.State
+            autoStart                      = $TestParameters.autoStart
+            CLRConfigFile                  = $TestParameters.CLRConfigFile
+            enable32BitAppOnWin64          = $TestParameters.enable32BitAppOnWin64
+            enableConfigurationOverride    = $TestParameters.enableConfigurationOverride
+            managedPipelineMode            = $TestParameters.managedPipelineMode
+            managedRuntimeLoader           = $TestParameters.managedRuntimeLoader
+            managedRuntimeVersion          = $TestParameters.managedRuntimeVersion
+            passAnonymousToken             = $TestParameters.passAnonymousToken
+            startMode                      = $TestParameters.startMode
+            queueLength                    = $TestParameters.queueLength
+            cpuAction                      = $TestParameters.cpuAction
+            cpuLimit                       = $TestParameters.cpuLimit
+            cpuResetInterval               = $TestParameters.cpuResetInterval
+            cpuSmpAffinitized              = $TestParameters.cpuSmpAffinitized
+            cpuSmpProcessorAffinityMask    = $TestParameters.cpuSmpProcessorAffinityMask
+            cpuSmpProcessorAffinityMask2   = $TestParameters.cpuSmpProcessorAffinityMask2
+            identityType                   = $TestParameters.identityType
+            Credential                     = $TestParameters.Credential
+            idleTimeout                    = $TestParameters.idleTimeout
+            idleTimeoutAction              = $TestParameters.idleTimeoutAction
+            loadUserProfile                = $TestParameters.loadUserProfile
+            logEventOnProcessModel         = $TestParameters.logEventOnProcessModel
+            logonType                      = $TestParameters.logonType
+            manualGroupMembership          = $TestParameters.manualGroupMembership
+            maxProcesses                   = $TestParameters.maxProcesses
+            pingingEnabled                 = $TestParameters.pingingEnabled
+            pingInterval                   = $TestParameters.pingInterval
+            pingResponseTime               = $TestParameters.pingResponseTime
+            setProfileEnvironment          = $TestParameters.setProfileEnvironment
+            shutdownTimeLimit              = $TestParameters.shutdownTimeLimit
+            startupTimeLimit               = $TestParameters.startupTimeLimit
+            orphanActionExe                = $TestParameters.orphanActionExe
+            orphanActionParams             = $TestParameters.orphanActionParams
+            orphanWorkerProcess            = $TestParameters.orphanWorkerProcess
+            loadBalancerCapabilities       = $TestParameters.loadBalancerCapabilities
+            rapidFailProtection            = $TestParameters.rapidFailProtection
+            rapidFailProtectionInterval    = $TestParameters.rapidFailProtectionInterval
+            rapidFailProtectionMaxCrashes  = $TestParameters.rapidFailProtectionMaxCrashes
+            autoShutdownExe                = $TestParameters.autoShutdownExe
+            autoShutdownParams             = $TestParameters.autoShutdownParams
+            disallowOverlappingRotation    = $TestParameters.disallowOverlappingRotation
+            disallowRotationOnConfigChange = $TestParameters.disallowRotationOnConfigChange
+            logEventOnRecycle              = $TestParameters.logEventOnRecycle
+            restartMemoryLimit             = $TestParameters.restartMemoryLimit
+            restartPrivateMemoryLimit      = $TestParameters.restartPrivateMemoryLimit
+            restartRequestsLimit           = $TestParameters.restartRequestsLimit
+            restartTimeLimit               = $TestParameters.restartTimeLimit
+            restartSchedule                = $TestParameters.restartSchedule
+        }
+    }
+}

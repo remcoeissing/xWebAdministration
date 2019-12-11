@@ -530,7 +530,9 @@ function Set-TargetResource
             Write-Verbose -Message ($script:localizedData['VerboseAppPoolNotFound'] -f $Name)
             Write-Verbose -Message ($script:localizedData['VerboseNewAppPool'] -f $Name)
 
-            $appPool = New-WebAppPool -Name $Name -ErrorAction Stop
+            Add-WebConfigurationProperty -Filter 'system.applicationHost/applicationPools' -Name "." -Value @{name = "$Name"} -PSPath 'MACHINE/WEBROOT/APPHOST'
+            $appPool = Get-WebConfiguration -Filter '/system.applicationHost/applicationPools/add' |
+                Where-Object -FilterScript {$_.name -eq $Name}
         }
 
         # Set Application Pool Properties
